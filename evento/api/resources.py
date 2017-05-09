@@ -1,17 +1,104 @@
 from tastypie.resources import ModelResource
 from tastypie import fields, utils
-from evento.models import TipoInscricao, Inscricoes, PessoaFisica
+from tastypie.authorization import Authorization
+from evento.models import *
 from django.contrib.auth.models import User
 
+#ok
+class PessoaResource(ModelResource):
+    class Meta:
+        queryset = Pessoa.objects.all()
+        allowed_methods = ['get','post','delete','put']
+        authorization=Authorization()
+        resource_name = 'pessoa'
+        filtering = {
+            "nome": ('exact', 'startswith',)
+        }
+#ok
+class EventoResource(ModelResource):
+    realizador= fields.ToOneField(PessoaResource, 'realizador')
+    class Meta:
+        queryset = Evento.objects.all()
+        allowed_methods = ['get','post','delete','put']
+        authorization=Authorization()
+        filtering = {
+            "nome": ('exact', 'startswith',)
+            }
+#ok
+class EventoCientificoResource(ModelResource):
+    realizador= fields.ToOneField(PessoaResource, 'realizador')
+    class Meta:
+        queryset = EventoCientifico.objects.all()
+        allowed_methods = ['get','post','delete','put']
+        resource_name = 'eventocientifico'
+        authorization=Authorization()
+        filtering = {
+            "issn": ('exact', 'startswith',)
+        }
+#ok
+class PessoaFisicaResource(ModelResource):
+    class Meta:
+        queryset = PessoaFisica.objects.all()
+        allowed_methods = ['get','post','delete','put']
+        resource_name = 'pessoafisica'
+        authorization=Authorization()
+        filtering = {
+            "cpf": ('exact', 'startswith',)
+        }
+#ok
+class PessoaJuridicaResource(ModelResource):
+    class Meta:
+        queryset = PessoaJuridica.objects.all()
+        allowed_methods = ['get','post','delete','put']
+        resource_name = 'pessoajuridica'
+        authorization=Authorization()
+        filtering = {
+            "cnpj": ('exact', 'startswith',)
+        }
+#ok
+class AutorResource(ModelResource):
+    class Meta:
+        queryset = Autor.objects.all()
+        allowed_methods = ['get','post','delete','put']
+        resource_name = 'autor'
+        authorization=Authorization()
+        filtering = {
+            "curriculo": ('exact', 'startswith',)
+        }
+
+class ArtigoCientificoResource(ModelResource):
+    evento = fields.ToOneField(EventoCientificoResource, 'evento')
+    class Meta:
+        queryset = ArtigoCientifico.objects.all()
+        allowed_methods = ['get','post','delete','put']
+        resource_name = 'artigocientifico'
+        authorization=Authorization()
+        filtering = {
+            "titulo": ('exact', 'startswith',)
+        }####
+
+class ArtigoAutorResource(ModelResource):
+    autor = fields.ToOneField(AutorResource, 'autor')
+    artigocientifico = fields.ToOneField(ArtigoCientificoResource, 'artigocientifico')
+    class Meta:
+        queryset = ArtigoAutor.objects.all()
+        allowed_methods = ['get','post','delete','put']
+        resource_name = 'artigoautor'
+        authorization=Authorization()
+        filtering = {
+            "autor": ('exact', 'startswith',)
+        }
 
 class TipoInscricaoResource(ModelResource):
     class Meta:
         queryset = TipoInscricao.objects.all()
-        allowed_methods = ['get']
+        allowed_methods = ['get','post','delete','put']
+        authorization=Authorization()
         filtering = {
             "descricao": ('exact', 'startswith',)
-        }
+            #tupla, palavra exata e começa com
 
+        }
 
 class UserResource(ModelResource):
     class Meta:
@@ -19,15 +106,13 @@ class UserResource(ModelResource):
         resource_name = 'user'
         excludes = ['password', 'is_active']
 
-
-class PessoaFisicaResource(ModelResource):
-    class Meta:
-        queryset = PessoaFisica.objects.all()
-        allowed_methods = ['get']
-
-
 class InscricaoResource(ModelResource):
     pessoa = fields.ToOneField(PessoaFisicaResource, 'pessoa')
+    evento = fields.ToOneField(EventoResource, 'evento')
     class Meta:
         queryset = Inscricoes.objects.all()
-        allowed_methods = ['get']
+        allowed_methods = ['get','post','delete','put']
+        authorization=Authorization()
+        filtering = {
+            "descricao": ('exact', 'startswith',)
+            }

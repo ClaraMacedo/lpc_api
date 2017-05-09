@@ -1,17 +1,16 @@
 from django.db import models
 from django.utils import timezone
 
-
 class Evento(models.Model):
     nome = models.CharField('nome', max_length=200)
-    eventoPrincipal = models.CharField('eventoPrincipal', max_length=200)
-    sigla = models.CharField('sigla', max_length=20)
-    dataEHoraDeInicio = models.DateTimeField('dataEHoraDeInicio', default=timezone.now)
-    palavrasChave = models.CharField('palavrasChave', max_length=200)
-    logotipo = models.CharField('logotipo', max_length=200)
+    eventoPrincipal = models.CharField('eventoPrincipal', max_length=200, null=True)
+    sigla = models.CharField('sigla', max_length=20, null=True)
+    dataEHoraDeInicio = models.DateTimeField('dataEHoraDeInicio', default=timezone.now, null=True)
+    palavrasChave = models.CharField('palavrasChave', max_length=200, null=True)
+    logotipo = models.CharField('logotipo', max_length=200, null=True)
     realizador = models.ForeignKey('Pessoa')
     cidade = models.TextField('cidade', blank=True, null=True)
-    uf = models.CharField('uf', max_length=2)
+    uf = models.CharField('uf', max_length=2, null=True)
     endereco = models.TextField('endereco', blank=True, null=True)
     cep = models.TextField('cep', blank=True, null=True)
 
