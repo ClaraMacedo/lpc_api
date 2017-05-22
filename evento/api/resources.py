@@ -3,6 +3,7 @@ from tastypie import fields, utils
 from tastypie.authorization import Authorization
 from evento.models import *
 from django.contrib.auth.models import User
+from tastypie.exceptions import Unauthorized
 
 #ok
 class PessoaResource(ModelResource):
@@ -90,6 +91,26 @@ class ArtigoAutorResource(ModelResource):
         }
 
 class TipoInscricaoResource(ModelResource):
+    def obj_create(self, bundle, **kwargs):
+        if not(TipoInscricao.objects.filter(descricao=bundle.data['descricao'].upper())):
+            print(bundle.data)
+            #print(kwargs)
+            tipo=TipoInscricao()
+            tipo.descricao= bundle.data['descricao'].upper()
+            tipo.save()
+            bundle.obj= tipo
+        else:
+            raise Unauthorized('Já existe tipo com este nome')
+
+        #print(a)
+        #if(len(a)>0):s
+        #    print("jah existe")
+        #    return False
+        #else:
+        #    return bundle
+
+
+
     class Meta:
         queryset = TipoInscricao.objects.all()
         allowed_methods = ['get','post','delete','put']
@@ -97,8 +118,8 @@ class TipoInscricaoResource(ModelResource):
         filtering = {
             "descricao": ('exact', 'startswith',)
             #tupla, palavra exata e começa com
-
         }
+
 
 class UserResource(ModelResource):
     class Meta:
