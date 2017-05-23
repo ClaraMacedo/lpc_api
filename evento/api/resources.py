@@ -101,7 +101,6 @@ class TipoInscricaoResource(ModelResource):
             bundle.obj= tipo
         else:
             raise Unauthorized('Já existe tipo com este nome')
-
         #print(a)
         #if(len(a)>0):s
         #    print("jah existe")
@@ -109,7 +108,9 @@ class TipoInscricaoResource(ModelResource):
         #else:
         #    return bundle
 
-
+    def obj_delete_list(self, bundle, **kwargs):
+        raise Unauthorized('Não pode-se apagar lista completa!')
+        #exceptions
 
     class Meta:
         queryset = TipoInscricao.objects.all()
@@ -130,6 +131,20 @@ class UserResource(ModelResource):
 class InscricaoResource(ModelResource):
     pessoa = fields.ToOneField(PessoaFisicaResource, 'pessoa')
     evento = fields.ToOneField(EventoResource, 'evento')
+    def obj_create(self, bundle, **kwargs):
+        print(bundle.data['evento'])
+        if not(Inscricoes.objects.filter(pessoa=bundle.data['pessoa']) and Inscricoes.objects.filter(evento=bundle.data['evento'])):
+            print(bundle.data)
+            #print(kwargs)
+            tipo=Inscricoes()
+            tipo.pessoafisica= bundle.data['pessoa']
+            tipo.evento= bundle.data['evento']
+            tipo.save()
+            bundle.obj= tipo
+
+        else:
+            raise Unauthorized('Esta pessoa já esta inscrita neste evento')
+
     class Meta:
         queryset = Inscricoes.objects.all()
         allowed_methods = ['get','post','delete','put']
