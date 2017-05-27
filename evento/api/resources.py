@@ -132,9 +132,17 @@ class InscricaoResource(ModelResource):
     pessoa = fields.ToOneField(PessoaFisicaResource, 'pessoa')
     evento = fields.ToOneField(EventoResource, 'evento')
     def obj_create(self, bundle, **kwargs):
-        print(bundle.data['evento'])
-        if not(Inscricoes.objects.filter(pessoa=bundle.data['pessoa']) and Inscricoes.objects.filter(evento=bundle.data['evento'])):
-            print(bundle.data)
+        #print(bundle.data['evento'])
+        eventoPk=bundle.data['evento'].split('/')
+        pessoaPk=bundle.data['pessoa'].split('/')
+        #print(eventoPk[4])
+        #print(pessoaPk[4])
+        pes= Evento.pessoa
+        if(Inscricoes.objects.filter(pessoa=pessoaPk)):
+            print(eventoPk[4])
+
+        if not(Inscricoes.objects.filter(pk=pessoaPk) and Inscricoes.objects.filter(evento=eventoPk)):
+            print(eventoPk[4])
             #print(kwargs)
             tipo=Inscricoes()
             tipo.pessoafisica= bundle.data['pessoa']
