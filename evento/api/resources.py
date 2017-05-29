@@ -137,21 +137,25 @@ class InscricaoResource(ModelResource):
         pessoaPk=bundle.data['pessoa'].split('/')
         #print(eventoPk[4])
         #print(pessoaPk[4])
-        pes= Evento.pessoa
-        if(Inscricoes.objects.filter(pessoa=pessoaPk)):
-            print(eventoPk[4])
 
-        if not(Inscricoes.objects.filter(pk=pessoaPk) and Inscricoes.objects.filter(evento=eventoPk)):
-            print(eventoPk[4])
-            #print(kwargs)
-            tipo=Inscricoes()
-            tipo.pessoafisica= bundle.data['pessoa']
-            tipo.evento= bundle.data['evento']
-            tipo.save()
-            bundle.obj= tipo
+        if not(Inscricoes.objects.filter(pessoa=pessoaPk[4],evento=eventoPk[4])):
+            print("\nPESSOA NÃO ESTA INSCRITA NESTE EVENTO\n")
+            tipoPk= bundle.data['tipoInscricao'].split('/')
 
+            inscricao=Inscricoes()
+            inscricao.pessoa= PessoaFisica.objects.get(pk=int(pessoaPk[4]))
+            inscricao.evento= Evento.objects.get(pk=int(eventoPk[4]))
+            inscricao.tipoInscricao= TipoInscricao.objects.get(pk=int(tipoPk[4]))
+            inscricao.dataEHoraDaInscricao=bundle.data["dataEHoraDaInscricao"]
+            inscricao.save()
+            bundle.obj= inscricao
+            return bundle
         else:
-            raise Unauthorized('Esta pessoa já esta inscrita neste evento')
+            raise Unauthorized('Esta pessoa já está inscrita neste evento')
+
+    def obj_delete_list(self, bundle, **kwargs):
+        raise Unauthorized('Não pode-se apagar lista completa!')
+    #exceptions
 
     class Meta:
         queryset = Inscricoes.objects.all()
